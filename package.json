@@ -1,6 +1,6 @@
 {
   "name": "react-useevent",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Same as React's `useCallback`, but returns a stable reference.",
   "main": "dist/useEvent.js",
   "files": [
