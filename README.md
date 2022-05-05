@@ -1,4 +1,4 @@
-# react-useevent
+# react-use-event-hook
 Same as React's `useCallback`, but returns a stable reference.
 
 This library is a user-land implementation of the `useEvent` hook, [proposed in this RFC](https://github.com/reactjs/rfcs/blob/useevent/text/0000-useevent.md).
@@ -6,7 +6,7 @@ This library is a user-land implementation of the `useEvent` hook, [proposed in 
 # Installation
 
 ```sh
-npm install react-useevent
+npm install react-use-event-hook
 ```
 
 # Usage
@@ -15,7 +15,7 @@ npm install react-useevent
 You can wrap any event handler into `useEvent`.
 
 ```js
-import useEvent from 'react-useevent';
+import useEvent from 'react-use-event-hook';
 
 function Chat() {
   const [text, setText] = useState('');

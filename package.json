@@ -1,6 +1,6 @@
 {
-  "name": "react-useevent",
-  "version": "0.9.0",
+  "name": "react-use-event-hook",
+  "version": "0.7.0",
   "description": "Same as React's `useCallback`, but returns a stable reference.",
   "main": "dist/useEvent.js",
   "files": [
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/scottrippey/react-useevent.git"
+    "url": "git+https://github.com/scottrippey/react-use-event-hook.git"
   },
   "keywords": [
     "react",
@@ -32,9 +32,9 @@
   "author": "Scott Rippey",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/scottrippey/react-useevent/issues"
+    "url": "https://github.com/scottrippey/react-use-event-hook/issues"
   },
-  "homepage": "https://github.com/scottrippey/react-useevent#readme",
+  "homepage": "https://github.com/scottrippey/react-use-event-hook#readme",
   "dependencies": {},
   "peerDependencies": {
     "react": ">=16.8.0"
