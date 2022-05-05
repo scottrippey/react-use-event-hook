@@ -1,0 +1,53 @@
+{
+  "name": "react-useevent",
+  "version": "0.9.0",
+  "description": "Same as React's `useCallback`, but returns a stable reference.",
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "build": "npm run clean && tsc",
+    "clean": "rimraf dist",
+    "build:watch": "tsc --watch",
+    "build:check": "tsc --noEmit",
+    "prepublishOnly": "npm run build",
+    "preversion": "npm run test && npm run types:check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scottrippey/react-useevent.git"
+  },
+  "keywords": [
+    "react",
+    "hooks",
+    "useevent",
+    "memo",
+    "performance",
+    "optimization"
+  ],
+  "author": "Scott Rippey",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/scottrippey/react-useevent/issues"
+  },
+  "homepage": "https://github.com/scottrippey/react-useevent#readme",
+  "dependencies": {},
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@testing-library/react-hooks": "^3.4.2",
+    "@types/jest": "^26.0.20",
+    "jest": "^26.6.3",
+    "prettier": "^2.2.1",
+    "react": "^17.0.1",
+    "react-test-renderer": "^17.0.1",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^26.4.4",
+    "typescript": "^4.1.3"
+  }
+}
