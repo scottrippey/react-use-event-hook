@@ -18,7 +18,9 @@ export function useEvent<TCallback extends AnyFunction>(callback: TCallback): TC
   // Create a stable callback that always calls the latest callback:
   const stableRef = useRef<TCallback>(null as any);
   if (!stableRef.current) {
-    stableRef.current = ((...args: any[]) => latestRef.current.apply(null, args)) as TCallback;
+    stableRef.current = function(...args: any[]) {
+      return latestRef.current.apply(this, args);
+    } as TCallback;
   }
 
   return stableRef.current;
