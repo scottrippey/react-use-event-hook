@@ -1,18 +1,19 @@
-import { renderHook } from "@testing-library/react-hooks";
-import { useEvent } from "./useEvent";
+import { renderHook } from '@testing-library/react-hooks';
+import { useEvent } from './useEvent';
 
-describe("useEvent", () => {
+describe('useEvent', () => {
   let initialCallback = jest.fn((...args) => args);
   let stableCallback: jest.Mock;
   let rerender: (newCallback?: jest.Mock) => void;
+
   function renderTestHook() {
     const result =
-     ( renderHook(
-      (latestCallback) => {
-        stableCallback = useEvent(latestCallback);
-      },
-      { initialProps: initialCallback }
-    ));
+      (renderHook(
+        (latestCallback) => {
+          stableCallback = useEvent(latestCallback);
+        },
+        { initialProps: initialCallback }
+      ));
     rerender = result.rerender;
   }
 
@@ -21,24 +22,31 @@ describe("useEvent", () => {
     renderTestHook();
   });
 
-  it("should return a different function", () => {
-    expect(typeof stableCallback).toEqual('function')
+  it('should return a different function', () => {
+    expect(typeof stableCallback).toEqual('function');
     expect(stableCallback).not.toBe(initialCallback);
     expect(initialCallback).not.toHaveBeenCalled();
   });
 
-  it("calling the stableCallback should call the initialCallback", () => {
+  it('calling the stableCallback should call the initialCallback', () => {
     stableCallback();
     expect(initialCallback).toHaveBeenCalled();
   });
 
-  it("all params and return value should be passed through", () => {
+  it('all params and return value should be passed through', () => {
     const returnValue = stableCallback(1, 2, 3);
     expect(initialCallback).toHaveBeenCalledWith(1, 2, 3);
-    expect(returnValue).toEqual([1, 2, 3]);
+    expect(returnValue).toEqual([ 1, 2, 3 ]);
   });
 
-  describe("when the hook is rerendered", () => {
+  it('will pass through the current "this" value', async () => {
+    const thisObj = { stableCallback };
+    thisObj.stableCallback(1, 2, 3);
+    expect(initialCallback).toHaveBeenCalledTimes(1);
+    expect(initialCallback.mock.instances[0]).toBe(thisObj);
+  });
+
+  describe('when the hook is rerendered', () => {
     let newCallback = jest.fn();
     let originalStableCallback: typeof stableCallback;
     beforeEach(() => {
@@ -46,17 +54,17 @@ describe("useEvent", () => {
       rerender(newCallback);
     });
 
-    it("the stableCallback is stable", () => {
+    it('the stableCallback is stable', () => {
       expect(stableCallback).toBe(originalStableCallback);
     });
 
-    it("calling the stableCallback only calls the latest callback", () => {
+    it('calling the stableCallback only calls the latest callback', () => {
       stableCallback();
       expect(initialCallback).not.toHaveBeenCalled();
       expect(newCallback).toHaveBeenCalled();
     });
 
-    it("the same goes for the 3rd render, etc", () => {
+    it('the same goes for the 3rd render, etc', () => {
       const thirdCallback = jest.fn();
       rerender(thirdCallback);
       stableCallback();
