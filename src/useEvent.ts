@@ -3,7 +3,7 @@ import { useLayoutEffect, useRef } from "react";
 type AnyFunction = (...args: any[]) => any;
 
 /**
- * This is to fix a warning when using useLayoutEffect on server
+ * Fixes a warning when using useLayoutEffect on server
  * https://gist.github.com/gaearon/e7d97cdf38a2907924ea12e4ebdf3c85
  */
 const useBrowserLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : () => {};
