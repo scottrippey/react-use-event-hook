@@ -3,6 +3,12 @@ import { useLayoutEffect, useRef } from "react";
 type AnyFunction = (...args: any[]) => any;
 
 /**
+ * This is to fix a warning when using useLayoutEffect on server
+ * https://gist.github.com/gaearon/e7d97cdf38a2907924ea12e4ebdf3c85
+ */
+const useBrowserLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : () => {};
+
+/**
  * Similar to useCallback, with a few subtle differences:
  * - The returned function is a stable reference, and will always be the same between renders
  * - No dependency lists required
@@ -11,7 +17,7 @@ type AnyFunction = (...args: any[]) => any;
 export function useEvent<TCallback extends AnyFunction>(callback: TCallback): TCallback {
   // Keep track of the latest callback:
   const latestRef = useRef<TCallback>(useEventResultShouldNotBeCalledDuringRender as any);
-  useLayoutEffect(() => {
+  useBrowserLayoutEffect(() => {
     latestRef.current = callback;
   }, [callback]);
 
