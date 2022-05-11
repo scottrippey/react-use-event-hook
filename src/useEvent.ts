@@ -4,7 +4,7 @@ type AnyFunction = (...args: any[]) => any;
 
 /**
  * Fixes a warning when using useLayoutEffect on server
- * https://gist.github.com/gaearon/e7d97cdf38a2907924ea12e4ebdf3c85
+ * https://reactjs.org/link/uselayouteffect-ssr
  */
 const useBrowserLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : () => {};
 
