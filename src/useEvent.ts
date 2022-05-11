@@ -3,7 +3,7 @@ import { useLayoutEffect, useRef } from "react";
 type AnyFunction = (...args: any[]) => any;
 
 /**
- * Fixes a warning when using useLayoutEffect on server
+ * Suppress the warning when using useLayoutEffect with SSR
  * https://reactjs.org/link/uselayouteffect-ssr
  */
 const useBrowserLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : () => {};
@@ -16,7 +16,7 @@ const useBrowserLayoutEffect = typeof window !== "undefined" ? useLayoutEffect :
  */
 export function useEvent<TCallback extends AnyFunction>(callback: TCallback): TCallback {
   // Keep track of the latest callback:
-  const latestRef = useRef<TCallback>(useEventResultShouldNotBeCalledDuringRender as any);
+  const latestRef = useRef<TCallback>(useEvent_shouldNotBeInvokedBeforeMount as any);
   useBrowserLayoutEffect(() => {
     latestRef.current = callback;
   }, [callback]);
@@ -36,9 +36,9 @@ export function useEvent<TCallback extends AnyFunction>(callback: TCallback): TC
  * Render methods should be pure, especially when concurrency is used,
  * so we will throw this error if the callback is called while rendering.
  */
-function useEventResultShouldNotBeCalledDuringRender() {
+function useEvent_shouldNotBeInvokedBeforeMount() {
   throw new Error(
-    "The callback from useEvent cannot be called while rendering; it should be wrapped in `useEffect` or `useLayoutEffect`."
+    "INVALID_USEEVENT_INVOCATION: the callback from useEvent cannot be invoked before the component has mounted."
   );
 }
 
