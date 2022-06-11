@@ -1,0 +1,34 @@
+name: "CI"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**'
+      - '!README.md'
+  pull_request:
+    paths:
+      - '**'
+      - '!README.md'
+
+jobs:
+  test:
+    name: "${{ matrix.command }}"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        command:
+          - npm run test
+          - npm run build:check
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Installation
+        run: npm ci
+
+      - name: "${{ matrix.command }}"
+        run: ${{ matrix.command }}
