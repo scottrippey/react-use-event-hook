@@ -1,4 +1,4 @@
-name: CI
+name: "CI"
 
 on:
   push:
@@ -14,6 +14,7 @@ on:
 
 jobs:
   test:
+    name: "${{ matrix.command }}"
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -29,5 +30,5 @@ jobs:
       - name: Installation
         run: npm ci
 
-      - name: "Run: ${{ matrix.command }}"
+      - name: "${{ matrix.command }}"
         run: ${{ matrix.command }}
