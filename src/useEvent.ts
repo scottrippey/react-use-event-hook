@@ -1,5 +1,7 @@
-// @ts-ignore
-import { useCallback, useLayoutEffect, useRef, useInsertionEffect } from "react";
+import { useLayoutEffect, useRef } from "react";
+
+// @ts-expect-error
+import { useInsertionEffect } from "react";
 
 type AnyFunction = (...args: any[]) => any;
 
@@ -16,17 +18,22 @@ const useBrowserEffect = typeof window !== "undefined" ? useInsertionEffect ?? u
  * - Properties or state accessed within the callback will always be "current"
  */
 export function useEvent<TCallback extends AnyFunction>(callback: TCallback): TCallback {
-  const ref = useRef(useEvent_shouldNotBeInvokedBeforeMount as TCallback);
+  // Keep track of the latest callback:
+  const latestRef = useRef<TCallback>(useEvent_shouldNotBeInvokedBeforeMount as any);
   useBrowserEffect(() => {
-    ref.current = callback;
+    latestRef.current = callback;
   }, [callback]);
 
-  return useCallback<TCallback>(
-    function (this: any) {
-      return ref.current.apply(this, arguments as any);
-    } as TCallback,
-    []
-  );
+  // Create a stable callback that always calls the latest callback:
+  // using useRef instead of useCallback avoids creating and empty array on every render
+  const stableRef = useRef<TCallback>(null as any);
+  if (!stableRef.current) {
+    stableRef.current = function (this: any) {
+      return latestRef.current.apply(this, arguments as any);
+    } as TCallback;
+  }
+
+  return stableRef.current;
 }
 
 /**
