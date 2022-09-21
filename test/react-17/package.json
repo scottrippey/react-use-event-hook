@@ -1,7 +1,8 @@
 {
   "devDependencies": {
     "@testing-library/react-hooks": "^8.0.1",
-    "react": "^17.0.2"
+    "react": "^17.0.2",
+    "react-test-renderer": "^17.0.2"
   },
   "scripts": {
     "test": "jest"
