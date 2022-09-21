@@ -1,13 +1,15 @@
-import { useLayoutEffect, useRef } from "react";
-
-// @ts-expect-error
-import { useInsertionEffect } from "react";
+import {
+  useLayoutEffect,
+  useRef,
+  // @ts-expect-error Only available in React 18+
+  useInsertionEffect,
+} from "react";
 
 type AnyFunction = (...args: any[]) => any;
 
 /**
- * Suppress the warning when using useLayoutEffect with SSR and make use of useInsertionEffect if available.
- * https://reactjs.org/link/uselayouteffect-ssr
+ * Suppress the warning when using useLayoutEffect with SSR. (https://reactjs.org/link/uselayouteffect-ssr)
+ * Make use of useInsertionEffect if available.
  */
 const useBrowserEffect = typeof window !== "undefined" ? useInsertionEffect ?? useLayoutEffect : () => {};
 
