@@ -19,7 +19,9 @@ jobs:
     strategy:
       matrix:
         command:
-          - npm run test
+          - npm run test:react-18
+          - npm run test:react-17
+          - npm run lint
           - npm run build:check
     steps:
       - uses: actions/checkout@v3
