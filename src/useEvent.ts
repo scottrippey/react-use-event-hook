@@ -1,12 +1,17 @@
-import { useLayoutEffect, useRef } from "react";
+import {
+  useLayoutEffect,
+  useRef,
+  // @ts-expect-error Only available in React 18+
+  useInsertionEffect,
+} from "react";
 
 type AnyFunction = (...args: any[]) => any;
 
 /**
- * Suppress the warning when using useLayoutEffect with SSR
- * https://reactjs.org/link/uselayouteffect-ssr
+ * Suppress the warning when using useLayoutEffect with SSR. (https://reactjs.org/link/uselayouteffect-ssr)
+ * Make use of useInsertionEffect if available.
  */
-const useBrowserLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : () => {};
+const useBrowserEffect = typeof window !== "undefined" ? useInsertionEffect ?? useLayoutEffect : () => {};
 
 /**
  * Similar to useCallback, with a few subtle differences:
@@ -17,14 +22,15 @@ const useBrowserLayoutEffect = typeof window !== "undefined" ? useLayoutEffect :
 export function useEvent<TCallback extends AnyFunction>(callback: TCallback): TCallback {
   // Keep track of the latest callback:
   const latestRef = useRef<TCallback>(useEvent_shouldNotBeInvokedBeforeMount as any);
-  useBrowserLayoutEffect(() => {
+  useBrowserEffect(() => {
     latestRef.current = callback;
   }, [callback]);
 
   // Create a stable callback that always calls the latest callback:
+  // using useRef instead of useCallback avoids creating and empty array on every render
   const stableRef = useRef<TCallback>(null as any);
   if (!stableRef.current) {
-    stableRef.current = function(this: any) {
+    stableRef.current = function (this: any) {
       return latestRef.current.apply(this, arguments as any);
     } as TCallback;
   }
