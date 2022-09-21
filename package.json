@@ -8,9 +8,13 @@
     "src"
   ],
   "scripts": {
+    "check": "npm run lint && npm run build:check && npm run test:react-18 && npm run test:react-17",
     "test": "jest",
+    "test:react-18": "jest",
     "test:react-17": "cd test/react-17; [[ -d node_modules ]] || npm ci; npm run test",
     "test:watch": "jest --watch",
+    "lint": "prettier src --check",
+    "lint:fix": "prettier src --write",
     "build": "npm run clean && tsc",
     "clean": "rimraf dist",
     "build:watch": "tsc --watch",
