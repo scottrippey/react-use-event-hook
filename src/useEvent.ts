@@ -1,8 +1,7 @@
 import {
   useLayoutEffect,
   useRef,
-  // @ts-expect-error Only available in React 18+
-  useInsertionEffect,
+  useInsertionEffect, // Only available in React 18+
 } from "react";
 
 type AnyFunction = (...args: any[]) => any;

@@ -1,11 +1,12 @@
 import React from "react";
-import { renderHook } from "@testing-library/react-hooks";
+import { version } from "react/package.json";
+import { renderHook } from "@testing-library/react";
 import { useEvent } from "./useEvent";
 
-// @ts-expect-error Only available in React 18+
+// Only available in React 18+
 const reactSupportsUseInsertionEffect = !!React.useInsertionEffect;
 
-describe("useEvent", () => {
+describe(`useEvent (React ${version})`, () => {
   let initialCallback = jest.fn((...args) => args);
   let stableCallback: jest.Mock;
   let rerender: (newCallback?: jest.Mock) => void;
@@ -50,14 +51,27 @@ describe("useEvent", () => {
   });
 
   describe("timing", () => {
+    beforeEach(() => {
+      jest.spyOn(console, "error").mockImplementation(() => {
+        /* suppress Reacts error logging  */
+      });
+    });
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
     it("will throw an error if called during render", () => {
       const useEventBeforeMount = () => {
         const cb = useEvent(() => 5);
         cb();
       };
-      const { result } = renderHook(() => useEventBeforeMount());
-      expect(result.error).toMatchInlineSnapshot(
-        `[Error: INVALID_USEEVENT_INVOCATION: the callback from useEvent cannot be invoked before the component has mounted.]`
+      expect(() => {
+        const r = renderHook(() => useEventBeforeMount());
+
+        // @ts-expect-error This is just for React 17:
+        if (r.result.error) throw r.result.error;
+      }).toThrowErrorMatchingInlineSnapshot(
+        `"INVALID_USEEVENT_INVOCATION: the callback from useEvent cannot be invoked before the component has mounted."`
       );
     });
 
@@ -71,57 +85,72 @@ describe("useEvent", () => {
         return state;
       };
       const { result } = renderHook(() => useEventInLayoutEffect());
-      expect(result).toMatchObject({ error: undefined, current: 5 });
+      expect(result).toMatchObject({ current: 5 });
     });
 
-    it("will throw an error if called in a NESTED useLayoutEffect", () => {
-      /**
-       * This is a tricky edge-case scenario that happens in React 16/17.
-       *
-       * We update our callback inside a `useLayoutEffect`.
-       * With nested React components, `useLayoutEffect` gets called
-       * in children first, parents last.
-       *
-       * So if we pass a `useEvent` callback into a child component,
-       * and the child component calls it in a useLayoutEffect,
-       * we will throw an error.
-       */
+    describe("when used in a NESTED useLayoutEffect", () => {
+      const renderNestedTest = () => {
+        /**
+         * This is a tricky edge-case scenario that happens in React 16/17.
+         *
+         * We update our callback inside a `useLayoutEffect`.
+         * With nested React components, `useLayoutEffect` gets called
+         * in children first, parents last.
+         *
+         * So if we pass a `useEvent` callback into a child component,
+         * and the child component calls it in a useLayoutEffect,
+         * we will throw an error.
+         */
 
-      // Since we're testing this with react-hooks, we need to use a Context to achieve parent-child hierarchy
-      const ctx = React.createContext<{ callback(): number }>(null!);
-      const wrapper: React.FC = (props) => {
-        const callback = useEvent(() => 5);
-        return React.createElement(ctx.Provider, { value: { callback } }, props.children);
+        // Since we're testing this with react-hooks, we need to use a Context to achieve parent-child hierarchy
+        const ctx = React.createContext<{ callback(): number }>(null!);
+        const wrapper: React.FC<React.PropsWithChildren> = (props) => {
+          const callback = useEvent(() => 5);
+          return React.createElement(ctx.Provider, { value: { callback } }, props.children);
+        };
+
+        const { result } = renderHook(
+          () => {
+            const [layoutResult, setLayoutResult] = React.useState<any>(null);
+            const { callback } = React.useContext(ctx);
+            React.useLayoutEffect(() => {
+              // Unfortunately, renderHook won't capture a layout error.
+              // Instead, we'll manually capture it:
+              try {
+                setLayoutResult({ callbackResult: callback() });
+              } catch (err) {
+                setLayoutResult({ layoutError: err });
+              }
+            }, []);
+
+            return layoutResult;
+          },
+          { wrapper }
+        );
+
+        return result;
       };
 
-      const { result } = renderHook(
-        () => {
-          const [layoutResult, setLayoutResult] = React.useState<any>(null);
-          const { callback } = React.useContext(ctx);
-          React.useLayoutEffect(() => {
-            // Unfortunately, renderHook won't capture a layout error.
-            // Instead, we'll manually capture it:
-            try {
-              setLayoutResult({ callbackResult: callback() });
-            } catch (err) {
-              setLayoutResult({ layoutError: err });
+      if (!reactSupportsUseInsertionEffect) {
+        // React 17
+        it("will throw an error", () => {
+          const result = renderNestedTest();
+          expect(result.current).toMatchInlineSnapshot(`
+            Object {
+              "layoutError": [Error: INVALID_USEEVENT_INVOCATION: the callback from useEvent cannot be invoked before the component has mounted.],
             }
-          }, []);
-
-          return layoutResult;
-        },
-        { wrapper }
-      );
-
-      if (reactSupportsUseInsertionEffect) {
-        // React 18+ should have no problems with this scenario!
-        expect(result.current).toMatchInlineSnapshot();
+          `);
+        });
       } else {
-        expect(result.current).toMatchInlineSnapshot(`
-          Object {
-            "layoutError": [Error: INVALID_USEEVENT_INVOCATION: the callback from useEvent cannot be invoked before the component has mounted.],
-          }
-        `);
+        // React 18+
+        it("will have no problems because of useInjectionEffect", () => {
+          const result = renderNestedTest();
+          expect(result.current).toMatchInlineSnapshot(`
+            Object {
+              "callbackResult": 5,
+            }
+          `);
+        });
       }
     });
   });
