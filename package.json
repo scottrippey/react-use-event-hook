@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "test:react-17": "cd test/react-17; [[ -d node_modules ]] || npm ci; npm run test",
     "test:watch": "jest --watch",
     "build": "npm run clean && tsc",
     "clean": "rimraf dist",

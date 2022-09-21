@@ -20,6 +20,7 @@ jobs:
       matrix:
         command:
           - npm run test
+          - npm run test:react-17
           - npm run build:check
     steps:
       - uses: actions/checkout@v3
