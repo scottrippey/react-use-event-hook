@@ -1,12 +1,11 @@
 import React from "react";
-import { version } from "react/package.json";
 import { renderHook } from "@testing-library/react";
 import { useEvent } from "./useEvent";
 
 // Only available in React 18+
 const reactSupportsUseInsertionEffect = !!React.useInsertionEffect;
 
-describe(`useEvent (React ${version})`, () => {
+describe(`useEvent (React ${React.version})`, () => {
   let initialCallback = jest.fn((...args) => args);
   let stableCallback: jest.Mock;
   let rerender: (newCallback?: jest.Mock) => void;
