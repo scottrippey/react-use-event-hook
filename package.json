@@ -2,25 +2,29 @@
   "name": "react-use-event-hook",
   "version": "0.9.2",
   "description": "Same as React's `useCallback`, but returns a stable reference.",
-  "main": "dist/useEvent.js",
+  "main": "dist/cjs/useEvent.js",
+  "module": "dist/esm/useEvent.js",
+  "types": "dist/esm/useEvent.d.ts",
   "files": [
     "dist",
     "src"
   ],
   "scripts": {
-    "check": "npm run lint && npm run build:check && npm run test:react-18 && npm run test:react-17",
+    "check": "npm run lint && npm run typecheck && npm run test:react-18 && npm run test:react-17",
     "test": "jest",
     "test:react-18": "jest",
     "test:react-17": "cd test/react-17; test -d node_modules || npm ci; npm run test",
     "test:watch": "jest --watch",
     "lint": "prettier src --check",
     "lint:fix": "prettier src --write",
-    "build": "npm run clean && tsc",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "build:esm": "tsc",
+    "build:cjs": "tsc --outDir dist/cjs --module commonjs",
     "clean": "rimraf dist",
     "build:watch": "tsc --watch",
-    "build:check": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build",
-    "preversion": "npm run test && npm run build:check"
+    "preversion": "npm run test && npm run typecheck"
   },
   "repository": {
     "type": "git",

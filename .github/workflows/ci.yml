@@ -22,7 +22,7 @@ jobs:
           - npm run test:react-18
           - npm run test:react-17
           - npm run lint
-          - npm run build:check
+          - npm run typecheck
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
