@@ -1,6 +1,6 @@
 {
   "name": "react-use-event-hook",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "Same as React's `useCallback`, but returns a stable reference.",
   "main": "dist/cjs/useEvent.js",
   "module": "dist/esm/useEvent.js",
