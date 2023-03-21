@@ -6,10 +6,10 @@ type AnyFunction = (...args: any[]) => any;
  * Suppress the warning when using useLayoutEffect with SSR. (https://reactjs.org/link/uselayouteffect-ssr)
  * Make use of useInsertionEffect if available.
  */
-const useBrowserEffect =
+const useInsertionEffect =
   typeof window !== "undefined"
-    ? // useInsertionEffect only available in React 18+
-      React.useInsertionEffect ?? React.useLayoutEffect
+    ? // useInsertionEffect is available in React 18+
+      React.useInsertionEffect || React.useLayoutEffect
     : () => {};
 
 /**
@@ -21,7 +21,7 @@ const useBrowserEffect =
 export function useEvent<TCallback extends AnyFunction>(callback: TCallback): TCallback {
   // Keep track of the latest callback:
   const latestRef = React.useRef<TCallback>(useEvent_shouldNotBeInvokedBeforeMount as any);
-  useBrowserEffect(() => {
+  useInsertionEffect(() => {
     latestRef.current = callback;
   }, [callback]);
 
